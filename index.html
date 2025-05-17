@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UltraCalc Pro</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --dark: #121212;
+            --light: #f5f5f5;
+            --gray: #333;
+            --red: #ff4d4d;
+            --green: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--gray);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .display {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 2.5rem;
+            text-align: right;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            color: white;
+            border-radius: 8px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: var(--gray);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .btn.operator {
+            background: var(--primary);
+        }
+
+        .btn.equals {
+            background: var(--secondary);
+        }
+
+        .btn.clear {
+            background: var(--red);
+        }
+
+        .converter-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .converter-select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .result {
+            font-size: 1.5rem;
+            margin-top: 15px;
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: var(--gray);
+            outline: none;
+        }
+
+        .bmi-category {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .healthy {
+            color: var(--green);
+        }
+
+        .underweight {
+            color: #2196F3;
+        }
+
+        .overweight {
+            color: #FF9800;
+        }
+
+        .obese {
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('calculator')">Calc</div>
+            <div class="tab" onclick="openTab('unit-converter')">Units</div>
+            <div class="tab" onclick="openTab('currency-converter')">Currency</div>
+            <div class="tab" onclick="openTab('bmi-calculator')">BMI</div>
+            <div class="tab" onclick="openTab('tip-calculator')">Tip</div>
+        </div>
+
+        <!-- Calculator Tab -->
+        <div id="calculator" class="tab-content active">
+            <input type="text" class="display" id="calc-display" readonly value="0">
+            <div class="buttons">
+                <button class="btn clear" onclick="clearDisplay()">C</button>
+                <button class="btn operator" onclick="appendToDisplay('/')">÷</button>
+                <button class="btn operator" onclick="appendToDisplay('*')">×</button>
+                <button class="btn" onclick="backspace()">⌫</button>
+                <button class="btn" onclick="appendToDisplay('7')">7</button>
+                <button class="btn" onclick="appendToDisplay('8')">8</button>
+                <button class="btn" onclick="appendToDisplay('9')">9</button>
+                <button class="btn operator" onclick="appendToDisplay('-')">-</button>
+                <button class="btn" onclick="appendToDisplay('4')">4</button>
+                <button class="btn" onclick="appendToDisplay('5')">5</button>
+                <button class="btn" onclick="appendToDisplay('6')">6</button>
+                <button class="btn operator" onclick="appendToDisplay('+')">+</button>
+                <button class="btn" onclick="appendToDisplay('1')">1</button>
+                <button class="btn" onclick="appendToDisplay('2')">2</button>
+                <button class="btn" onclick="appendToDisplay('3')">3</button>
+                <button class="btn equals" onclick="calculate()">=</button>
+                <button class="btn" onclick="appendToDisplay('0')">0</button>
+                <button class="btn" onclick="appendToDisplay('.')">.</button>
+            </div>
+        </div>
+
+        <!-- Unit Converter Tab -->
+        <div id="unit-converter" class="tab-content">
+            <select class="converter-select" id="unit-select" onchange="convertUnit()">
+                <option value="cm-to-inch">cm → inch</option>
+                <option value="kg-to-lbs">kg → lbs</option>
+                <option value="c-to-f">°C → °F</option>
+            </select>
+            <input type="number" class="converter-input" id="unit-input" placeholder="Enter value" oninput="convertUnit()">
+            <div class="result" id="unit-result">Result: 0</div>
+        </div>
+
+        <!-- Currency Converter Tab -->
+        <div id="currency-converter" class="tab-content">
+            <input type="number" class="converter-input" id="currency-amount" placeholder="Amount" value="1" oninput="convertCurrency()">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <select class="converter-select" id="currency-from" onchange="convertCurrency()">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="JPY">JPY</option>
+                </select>
+                <span style="display: flex; align-items: center;">→</span>
+                <select class="converter-select" id="currency-to" onchange="convertCurrency()">
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                    <option value="GBP">GBP</option>
+                    <option value="JPY">JPY</option>
+                </select>
+            </div>
+            <div class="result" id="currency-result">1 USD = 0.85 EUR</div>
+        </div>
+
+        <!-- BMI Calculator Tab -->
+        <div id="bmi-calculator" class="tab-content">
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Height: <span id="height-value">170</span> cm</span>
+                </div>
+                <input type="range" class="slider" id="height-slider" min="100" max="250" value="170" oninput="updateBmi()">
+            </div>
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Weight: <span id="weight-value">70</span> kg</span>
+                </div>
+                <input type="range" class="slider" id="weight-slider" min="30" max="150" value="70" oninput="updateBmi()">
+            </div>
+            <div class="result" id="bmi-result">BMI: 24.2</div>
+            <div class="bmi-category healthy" id="bmi-category">Normal</div>
+        </div>
+
+        <!-- Tip Calculator Tab -->
+        <div id="tip-calculator" class="tab-content">
+            <input type="number" class="converter-input" id="bill-amount" placeholder="Bill Amount ($)" value="100" oninput="updateTip()">
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Tip: <span id="tip-percent">15</span>%</span>
+                </div>
+                <input type="range" class="slider" id="tip-slider" min="0" max="30" value="15" oninput="updateTip()">
+            </div>
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Split: <span id="split-people">1</span> person(s)</span>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="changeSplit(-1)" style="padding: 5px 10px; background: var(--gray); border: none; color: white; border-radius: 4px;">-</button>
+                        <button onclick="changeSplit(1)" style="padding: 5px 10px; background: var(--gray); border: none; color: white; border-radius: 4px;">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="result" id="tip-total">Total: $115.00</div>
+            <div class="result" id="tip-per-person">Per Person: $115.00</div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+
+            const tabButtons = document.querySelectorAll('.tab');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // Calculator Logic
+        let currentInput = '0';
+        const display = document.getElementById('calc-display');
+
+        function updateDisplay() {
+            display.value = currentInput;
+        }
+
+        function appendToDisplay(value) {
+            if (currentInput === '0' && value !== '.') {
+                currentInput = value;
+            } else {
+                currentInput += value;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (currentInput.length === 1) {
+                currentInput = '0';
+            } else {
+                currentInput = currentInput.slice(0, -1);
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                currentInput = eval(currentInput).toString();
+                updateDisplay();
+            } catch {
+                currentInput = 'Error';
+                updateDisplay();
+                setTimeout(clearDisplay, 1000);
+            }
+        }
+
+        // Unit Converter Logic
+        function convertUnit() {
+            const unit = document.getElementById('unit-select').value;
+            const input = parseFloat(document.getElementById('unit-input').value) || 0;
+            let result = 0;
+
+            switch (unit) {
+                case 'cm-to-inch':
+                    result = input * 0.393701;
+                    break;
+                case 'kg-to-lbs':
+                    result = input * 2.20462;
+                    break;
+                case 'c-to-f':
+                    result = (input * 9/5) + 32;
+                    break;
+            }
+
+            document.getElementById('unit-result').textContent = `Result: ${result.toFixed(2)}`;
+        }
+
+        // Currency Converter Logic (Mock API)
+        const exchangeRates = {
+            USD: { EUR: 0.85, GBP: 0.73, JPY: 110.25 },
+            EUR: { USD: 1.18, GBP: 0.86, JPY: 129.75 },
+            GBP: { USD: 1.37, EUR: 1.16, JPY: 151.20 },
+            JPY: { USD: 0.0091, EUR: 0.0077, GBP: 0.0066 }
+        };
+
+        function convertCurrency() {
+            const from = document.getElementById('currency-from').value;
+            const to = document.getElementById('currency-to').value;
+            const amount = parseFloat(document.getElementById('currency-amount').value) || 0;
+            const rate = exchangeRates[from][to];
+            const result = amount * rate;
+
+            document.getElementById('currency-result').textContent = 
+                `${amount.toFixed(2)} ${from} = ${result.toFixed(2)} ${to}`;
+        }
+
+        // BMI Calculator Logic
+        function updateBmi() {
+            const height = parseInt(document.getElementById('height-slider').value);
+            const weight = parseInt(document.getElementById('weight-slider').value);
+            const heightM = height / 100;
+            const bmi = weight / (heightM * heightM);
+
+            document.getElementById('height-value').textContent = height;
+            document.getElementById('weight-value').textContent = weight;
+            document.getElementById('bmi-result').textContent = `BMI: ${bmi.toFixed(1)}`;
+
+            const categoryElement = document.getElementById('bmi-category');
+            let category = '';
+            let className = '';
+
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                className = 'underweight';
+            } else if (bmi < 25) {
+                category = 'Normal';
+                className = 'healthy';
+            } else if (bmi < 30) {
+                category = 'Overweight';
+                className = 'overweight';
+            } else {
+                category = 'Obese';
+                className = 'obese';
+            }
+
+            categoryElement.textContent = category;
+            categoryElement.className = 'bmi-category ' + className;
+        }
+
+        // Tip Calculator Logic
+        function updateTip() {
+            const bill = parseFloat(document.getElementById('bill-amount').value) || 0;
+            const tipPercent = parseInt(document.getElementById('tip-slider').value);
+            const people = parseInt(document.getElementById('split-people').textContent);
+
+            const tipAmount = bill * (tipPercent / 100);
+            const total = bill + tipAmount;
+            const perPerson = total / people;
+
+            document.getElementById('tip-percent').textContent = tipPercent;
+            document.getElementById('tip-total').textContent = `Total: $${total.toFixed(2)}`;
+            document.getElementById('tip-per-person').textContent = `Per Person: $${perPerson.toFixed(2)}`;
+        }
+
+        function changeSplit(change) {
+            const splitElement = document.getElementById('split-people');
+            let people = parseInt(splitElement.textContent) + change;
+            if (people < 1) people = 1;
+            splitElement.textContent = people;
+            updateTip();
+        }
+
+        // Initialize
+        updateBmi();
+        updateTip();
+    </script>
+</body>
+</html>
